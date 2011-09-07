@@ -18,10 +18,15 @@ while (len(player1) > 0) & (len(player2) > 0):
 		player1.append(player1[0])
 		player1.append(player2[0])
 		del player1[0], player2[0]
-	else:
+
+	if player1[0] < player2[0]:
 		player2.append(player2[0])
 		player2.append(player1[0])
 		del player1[0], player2[0]
+
+	if player1[0] == player2[0]:
+		print random.choice(player1[1:4])
+		print random.choice(player2[1:4])
 
 	print player1
 	print player2
