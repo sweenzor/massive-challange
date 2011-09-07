@@ -7,4 +7,11 @@ deck = range(2,15)*4
 
 # shuffle
 random.shuffle(deck)
-print deck
+
+#cut deck
+cut_size = len(deck)/2
+player1 = deck[:cut_size]
+player2 = deck[cut_size:]
+
+print player1
+print player2
