@@ -18,14 +18,14 @@ def create_deck():
 	return player1, player2
 
 def battle(player1, player2):
-	# Statistics
-	stats['battle_count'] += 1
-	if stats['war_depth'] > 0:
-		depth = stats['war_depth']
-		stats['depth'+str(depth)] += 1
-		stats['war_depth'] = 0
+	# statistics
+	game_stats['battle_count'] += 1
+	if game_stats['war_depth'] > 0:
+		depth = game_stats['war_depth']
+		game_stats['depth'+str(depth)] += 1
+		game_stats['war_depth'] = 0
 
-	# "Each player draws a card, higher value card wins both"
+	# "each player draws a card, higher value card wins both"
 	if player1[0] > player2[0]:
 		pot = [player1[0],player2[0]]
 		random.shuffle(pot)
@@ -40,7 +40,7 @@ def battle(player1, player2):
 		del player1[0], player2[0]
 		return
 
-	# "In the event of a tie, play a war"
+	# "in the event of a tie, play a war"
 	if player1[0] == player2[0]:
 		ante = []
 		ante.extend([player1[0],player2[0]])
@@ -49,11 +49,11 @@ def battle(player1, player2):
 		return
 
 def war(player1, player2, ante):
-	# Statistics
-	stats['war_count'] += 1
-	stats['war_depth'] += 1
+	# statistics
+	game_stats['war_count'] += 1
+	game_stats['war_depth'] += 1
 
-	# Check that both players have sufficient cards for a war:
+	# check that both players have sufficient cards for a war:
 	if len(player1) < 3:
 		player2.extend(ante+player1)
 		return
@@ -62,7 +62,7 @@ def war(player1, player2, ante):
 		player1.extend(ante+player2)
 		return
 
-	# "Each player antes three cards, then plays one of them"
+	# "each player antes three cards, then plays one of them"
 	player1_draw = random.choice(player1[0:3])
 	player2_draw = random.choice(player2[0:3])
 
@@ -91,15 +91,31 @@ if __name__=='__main__':
 
 	mark = time.time()
 	stats = Counter()
-	number_of_runs = 100000
+	max_stats = Counter()
+	number_of_runs = 10000
+
 	for run in range(1, number_of_runs):
+		game_stats = Counter()
 		player1, player2 = create_deck()
+
 		while (len(player1) > 0) & (len(player2) > 0):
 			battle(player1,player2)
 			#print 'player1: ',player1
 			#print 'player2: ',player2 , '\n'
+		
+		# game level stats vs. simulation level stats
+		for entry in game_stats:
+			if game_stats[entry] > max_stats[entry]:
+				max_stats[entry] = game_stats[entry]
+			stats[entry] += game_stats[entry]
+
 	print time.time()-mark
+
+	# print stats
 	print 'number_of_runs ', number_of_runs
 	stats += Counter() # clear zero counts
 	for entry in stats:
 		print entry, stats[entry], stats[entry]/(number_of_runs*1.0)
+	print '\n','max game stats'
+	for entry in max_stats:
+		print entry, max_stats[entry]
