@@ -18,7 +18,7 @@ def create_deck():
 	return player1, player2
 
 def battle(player1, player2):
-	# Statistics:
+	# Statistics
 	stats['battle_count'] += 1
 
 	# "Each player draws a card, higher value card wins both"
@@ -41,7 +41,7 @@ def battle(player1, player2):
 		return
 
 def war(player1, player2, ante):
-	# Statistics:
+	# Statistics
 	stats['war_count'] += 1
 
 	# Check that both players have sufficient cards for a war:
@@ -76,11 +76,15 @@ def war(player1, player2, ante):
 
 mark = time.time()
 stats = Counter()
-for run in range(1000000):
+number_of_runs = 10000
+for run in range(1, number_of_runs):
 	player1, player2 = create_deck()
 	while (len(player1) > 0) & (len(player2) > 0):
 		battle(player1,player2)
 		#print 'player1: ',player1
 		#print 'player2: ',player2 , '\n'
+		print 'runs ', run, '\n'
 print time.time()-mark
-print stats
+print 'number_of_runs ', number_of_runs
+for entry in stats:
+	print entry, stats[entry], stats[entry]/(number_of_runs*1.0)
