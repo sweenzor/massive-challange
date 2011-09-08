@@ -40,7 +40,13 @@ def battle(player1, player2):
 
 def war(player1, player2, ante):
 	# Check that both players have sufficient cards for a war:
+	if len(player1) < 3:
+		player2.extend(ante+player1)
+		return
 
+	if len(player2) < 3:
+		player1.extend(ante+player2)
+		return
 
 	# "Each player antes three cards, then plays one of them"
 	player1_draw = random.choice(player1[0:3])
@@ -49,15 +55,18 @@ def war(player1, player2, ante):
 	if player1_draw > player2_draw:
 		player1.extend(ante+player1[0:3]+player2[0:3])
 		del player1[0:3], player2[0:3]
+		return
 
 	if player1_draw < player2_draw:
 		player2.extend(ante+player2[0:3]+player1[0:3])
 		del player1[0:3], player2[0:3]
+		return
 	
 	if player1_draw == player2_draw:
 		ante.extend(player2[0:3]+player1[0:3])
 		del player1[0:3], player2[0:3]
 		war(player1, player2, ante)
+		return
 
 
 mark = time.time()
