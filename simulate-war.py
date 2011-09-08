@@ -20,10 +20,6 @@ def create_deck():
 def battle(player1, player2):
 	# statistics
 	game_stats['battle_count'] += 1
-	if game_stats['war_depth'] > 0:
-		depth = game_stats['war_depth']
-		game_stats['depth'+str(depth)] += 1
-		game_stats['war_depth'] = 0
 
 	# "each player draws a card, higher value card wins both"
 	if player1[0] > player2[0]:
@@ -92,7 +88,7 @@ if __name__=='__main__':
 	mark = time.time()
 	stats = Counter()
 	max_stats = Counter()
-	number_of_runs = 10000
+	number_of_runs = 100000
 
 	for run in range(1, number_of_runs):
 		game_stats = Counter()
@@ -102,6 +98,10 @@ if __name__=='__main__':
 			battle(player1,player2)
 			#print 'player1: ',player1
 			#print 'player2: ',player2 , '\n'
+			if game_stats['war_depth'] > 0:
+				depth = game_stats['war_depth']
+				game_stats['depth'+str(depth)] += 1
+				game_stats['war_depth'] = 0
 		
 		# game level stats vs. simulation level stats
 		for entry in game_stats:
@@ -114,6 +114,7 @@ if __name__=='__main__':
 	# print stats
 	print 'number_of_runs ', number_of_runs
 	stats += Counter() # clear zero counts
+	max_stats += Counter()
 	for entry in stats:
 		print entry, stats[entry], stats[entry]/(number_of_runs*1.0)
 	print '\n','max game stats'
