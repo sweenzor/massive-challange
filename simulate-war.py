@@ -72,8 +72,9 @@ def war(player1, player2, ante):
 mark = time.time()
 player1, player2 = create_deck()
 ante = []
-while (len(player1) > 0) & (len(player2) > 0):
-	battle(player1,player2)
-	print 'player1: ',player1
-	print 'player2: ',player2 , '\n'
+for run in range(10000000):
+	while (len(player1) > 0) & (len(player2) > 0):
+		battle(player1,player2)
+		#print 'player1: ',player1
+		#print 'player2: ',player2 , '\n'
 print time.time()-mark
