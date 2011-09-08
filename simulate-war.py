@@ -1,5 +1,6 @@
 import random
 import time
+from collections import Counter
 
 def create_deck():
 	# create deck of cards
@@ -10,7 +11,6 @@ def create_deck():
 	# shuffle (assuming that pseudo random is good enough)
 	random.shuffle(deck)
 
-	#cut deck
 	cut_size = len(deck)/2
 	player1 = deck[:cut_size]
 	player2 = deck[cut_size:]
@@ -18,6 +18,9 @@ def create_deck():
 	return player1, player2
 
 def battle(player1, player2):
+	# Statistics:
+	stats['battle_count'] += 1
+
 	# "Each player draws a card, higher value card wins both"
 	if player1[0] > player2[0]:
 		player1.extend([player1[0],player2[0]])
@@ -35,10 +38,12 @@ def battle(player1, player2):
 		ante.extend([player1[0],player2[0]])
 		del player1[0], player2[0]
 		war(player1, player2, ante)
-		#check war count here
 		return
 
 def war(player1, player2, ante):
+	# Statistics:
+	stats['war_count'] += 1
+
 	# Check that both players have sufficient cards for a war:
 	if len(player1) < 3:
 		player2.extend(ante+player1)
@@ -70,11 +75,12 @@ def war(player1, player2, ante):
 
 
 mark = time.time()
-player1, player2 = create_deck()
-ante = []
-for run in range(10000000):
+stats = Counter()
+for run in range(1000000):
+	player1, player2 = create_deck()
 	while (len(player1) > 0) & (len(player2) > 0):
 		battle(player1,player2)
 		#print 'player1: ',player1
 		#print 'player2: ',player2 , '\n'
 print time.time()-mark
+print stats
