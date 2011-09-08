@@ -1,4 +1,5 @@
 import random
+import time
 
 def create_deck():
 	# create deck of cards
@@ -21,20 +22,27 @@ def battle(player1, player2):
 	if player1[0] > player2[0]:
 		player1.extend([player1[0],player2[0]])
 		del player1[0], player2[0]
+		return
 
 	if player1[0] < player2[0]:
 		player2.extend([player2[0],player1[0]])
 		del player1[0], player2[0]
+		return
 
-	# "In the even of a tie, play a war"
+	# "In the event of a tie, play a war"
 	if player1[0] == player2[0]:
 		ante = []
 		ante.extend([player1[0],player2[0]])
 		del player1[0], player2[0]
 		war(player1, player2, ante)
+		#check war count here
+		return
 
 def war(player1, player2, ante):
-	# "Each player antes three cards, then plays another"
+	# Check that both players have sufficient cards for a war:
+
+
+	# "Each player antes three cards, then plays one of them"
 	player1_draw = random.choice(player1[0:3])
 	player2_draw = random.choice(player2[0:3])
 
@@ -52,10 +60,11 @@ def war(player1, player2, ante):
 		war(player1, player2, ante)
 
 
-
+mark = time.time()
 player1, player2 = create_deck()
 ante = []
 while (len(player1) > 0) & (len(player2) > 0):
 	battle(player1,player2)
 	print 'player1: ',player1
-	print 'player2: ',player2, '\n'
+	print 'player2: ',player2 , '\n'
+print time.time()-mark
