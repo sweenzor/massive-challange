@@ -20,6 +20,10 @@ def create_deck():
 def battle(player1, player2):
 	# Statistics
 	stats['battle_count'] += 1
+	if stats['war_depth'] > 0:
+		depth = stats['war_depth']
+		stats['depth'+str(depth)] += 1
+		stats['war_depth'] = 0
 
 	# "Each player draws a card, higher value card wins both"
 	if player1[0] > player2[0]:
@@ -47,6 +51,7 @@ def battle(player1, player2):
 def war(player1, player2, ante):
 	# Statistics
 	stats['war_count'] += 1
+	stats['war_depth'] += 1
 
 	# Check that both players have sufficient cards for a war:
 	if len(player1) < 3:
@@ -95,5 +100,6 @@ if __name__=='__main__':
 			#print 'player2: ',player2 , '\n'
 	print time.time()-mark
 	print 'number_of_runs ', number_of_runs
+	stats += Counter() # clear zero counts
 	for entry in stats:
 		print entry, stats[entry], stats[entry]/(number_of_runs*1.0)
