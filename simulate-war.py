@@ -23,12 +23,16 @@ def battle(player1, player2):
 
 	# "Each player draws a card, higher value card wins both"
 	if player1[0] > player2[0]:
-		player1.extend([player1[0],player2[0]])
+		pot = [player1[0],player2[0]]
+		random.shuffle(pot)
+		player1.extend(pot)
 		del player1[0], player2[0]
 		return
 
 	if player1[0] < player2[0]:
-		player2.extend([player2[0],player1[0]])
+		pot = [player1[0],player2[0]]
+		random.shuffle(pot)
+		player2.extend(pot)
 		del player1[0], player2[0]
 		return
 
@@ -58,12 +62,16 @@ def war(player1, player2, ante):
 	player2_draw = random.choice(player2[0:3])
 
 	if player1_draw > player2_draw:
-		player1.extend(ante+player1[0:3]+player2[0:3])
+		pot = ante+player1[0:3]+player2[0:3]
+		random.shuffle(pot)
+		player1.extend(pot)
 		del player1[0:3], player2[0:3]
 		return
 
 	if player1_draw < player2_draw:
-		player2.extend(ante+player2[0:3]+player1[0:3])
+		pot = ante+player1[0:3]+player2[0:3]
+		random.shuffle(pot)
+		player2.extend(pot)
 		del player1[0:3], player2[0:3]
 		return
 	
@@ -74,17 +82,18 @@ def war(player1, player2, ante):
 		return
 
 
-mark = time.time()
-stats = Counter()
-number_of_runs = 10000
-for run in range(1, number_of_runs):
-	player1, player2 = create_deck()
-	while (len(player1) > 0) & (len(player2) > 0):
-		battle(player1,player2)
-		#print 'player1: ',player1
-		#print 'player2: ',player2 , '\n'
-		print 'runs ', run, '\n'
-print time.time()-mark
-print 'number_of_runs ', number_of_runs
-for entry in stats:
-	print entry, stats[entry], stats[entry]/(number_of_runs*1.0)
+if __name__=='__main__':
+
+	mark = time.time()
+	stats = Counter()
+	number_of_runs = 100000
+	for run in range(1, number_of_runs):
+		player1, player2 = create_deck()
+		while (len(player1) > 0) & (len(player2) > 0):
+			battle(player1,player2)
+			#print 'player1: ',player1
+			#print 'player2: ',player2 , '\n'
+	print time.time()-mark
+	print 'number_of_runs ', number_of_runs
+	for entry in stats:
+		print entry, stats[entry], stats[entry]/(number_of_runs*1.0)
