@@ -16,6 +16,7 @@ def create_deck():
 	player1 = deck[:cut_size]
 	player2 = deck[cut_size:]
 
+	# return the halved decks
 	return player1, player2
 
 def battle(player1, player2):
@@ -39,7 +40,10 @@ def battle(player1, player2):
 
 	# "in the event of a tie, play a war"
 	if player1[0] == player2[0]:
+		# statistics
 		game_stats['war_count'] += 1
+		# wars (tie breakers) can be recursive,
+		# create pool of cards in play
 		ante = []
 		ante.extend([player1[0],player2[0]])
 		del player1[0], player2[0]
@@ -50,7 +54,8 @@ def war(player1, player2, ante):
 	# statistics
 	game_stats['war_depth'] += 1
 
-	# check that both players have sufficient cards for a war:
+	# check that both players have sufficient cards for a war,
+	# if not, sacrifice remaining cards to the victor
 	if len(player1) < 3:
 		player2.extend(ante+player1)
 		return
@@ -59,10 +64,13 @@ def war(player1, player2, ante):
 		player1.extend(ante+player2)
 		return
 
+	# begin war
 	# "each player antes three cards, then plays one of them"
 	player1_draw = random.choice(player1[0:3])
 	player2_draw = random.choice(player2[0:3])
 
+	# all the cards are added to the pot,
+	# to be given to the winner (or eventual winner)
 	if player1_draw > player2_draw:
 		pot = ante+player1[0:3]+player2[0:3]
 		random.shuffle(pot)
@@ -86,19 +94,23 @@ def war(player1, player2, ante):
 
 if __name__=='__main__':
 
-	mark = time.time()
-	stats = Counter()
-	max_stats = Counter()
-	number_of_runs = 100
+	mark = time.time() # runtime
+	stats = Counter() # dict for entire sim stats
+	max_stats = Counter() # dict for maximum event stats
+
+	number_of_runs = 10000
 
 	for run in range(1, number_of_runs):
-		game_stats = Counter()
+		game_stats = Counter() # dict for individual game stats
 		player1, player2 = create_deck()
 
 		while (len(player1) > 0) & (len(player2) > 0):
+
 			battle(player1,player2)
 			#print 'player1: ',player1
 			#print 'player2: ',player2 , '\n'
+
+			# post battle 'depth' stats wrangling
 			if game_stats['war_depth'] > 0:
 				depth = game_stats['war_depth']
 				game_stats['depth'+str(depth)] += 1
