@@ -11,6 +11,7 @@ def create_deck():
 	# shuffle (assuming that pseudo random is good enough)
 	random.shuffle(deck)
 
+	# cut the deck
 	cut_size = len(deck)/2
 	player1 = deck[:cut_size]
 	player2 = deck[cut_size:]
@@ -38,6 +39,7 @@ def battle(player1, player2):
 
 	# "in the event of a tie, play a war"
 	if player1[0] == player2[0]:
+		game_stats['war_count'] += 1
 		ante = []
 		ante.extend([player1[0],player2[0]])
 		del player1[0], player2[0]
@@ -46,7 +48,6 @@ def battle(player1, player2):
 
 def war(player1, player2, ante):
 	# statistics
-	game_stats['war_count'] += 1
 	game_stats['war_depth'] += 1
 
 	# check that both players have sufficient cards for a war:
