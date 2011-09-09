@@ -88,7 +88,7 @@ if __name__=='__main__':
 	mark = time.time()
 	stats = Counter()
 	max_stats = Counter()
-	number_of_runs = 100000
+	number_of_runs = 100
 
 	for run in range(1, number_of_runs):
 		game_stats = Counter()
@@ -109,10 +109,9 @@ if __name__=='__main__':
 				max_stats[entry] = game_stats[entry]
 			stats[entry] += game_stats[entry]
 
-	print time.time()-mark
-
 	# print stats
 	print 'number_of_runs ', number_of_runs
+	print 'time_elapsed ', time.time()-mark, '\n'
 	stats += Counter() # clear zero counts
 	max_stats += Counter()
 	for entry in stats:
