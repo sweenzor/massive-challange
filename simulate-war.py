@@ -8,8 +8,12 @@ from collections import Counter
 class WarGame(object):
 	"""Simulate the card game 'war'"""
 
-	def __init__(self, players):
-		self.players = players
+	def __init__(self, player1, player2):
+		while (len(player1.hand) > 0) & (len(player2.hand) > 0):
+
+			battle(player1,player2)
+
+
 		return None
 
 	def battle(self):
