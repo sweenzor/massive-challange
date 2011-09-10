@@ -9,10 +9,12 @@ class WarGame(object):
 	"""Simulate the card game 'war'"""
 
 	def __init__(self, player1, player2):
+		self.player1 = player1
+		self.player2 = player2
+
 		while (len(player1.hand) > 0) & (len(player2.hand) > 0):
 
 			battle(player1,player2)
-
 
 		return None
 
@@ -28,14 +30,15 @@ class Player(object):
 		self.hand = hand
 		return None
 
-	def draw(self):
-		return self.hand[0]
-	
-	def ante(self):
-		return self.hand[0:3]
+	def draw(self, number):
+		draw = self.hand[0:number]
+		del self.hand[0:number]
+		return draw
 
-	def return_cards(self):
-		pass
+	def return_cards(self, pot):
+		random.shuffle(pot)
+		self.hand.extend(pot)
+		return None
 
 class Deck(object):
 	"""Create deck of cards"""
