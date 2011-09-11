@@ -12,14 +12,15 @@ class Simulation(object):
 		return None
 
 	def run(self):
-		stats = Statistics()
+		stats = Statistics(self.runs)
 		for i in range(self.runs):
 			stats.game_new()
 			hand1, hand2 = Deck().deal()
 			player1 = Player(hand1)
 			player2 = Player(hand2)
 			war = Game(player1,player2, stats)
-			stats.game_done()
+			stats.load_extrema()
+			stats.load_simulation()
 		print stats
 		return None
 
@@ -27,28 +28,48 @@ class Simulation(object):
 class Statistics(object):
 	"""Record statistics on whole simulation and particular games"""
 
-	def __init__(self):
+	def __init__(self, runs):
+		self.runs = runs
 		self.simulation_stats = Counter()
 		self.game_stats = Counter()
 		self.extrema_stats = Counter()
 		return None
 	
 	def __str__(self):
-		for entry in self.game_stats:
-			print entry, self.game_stats[entry]
+		self.simulation_stats += Counter()
+		for entry in self.simulation_stats:
+			print 'avg', entry, self.simulation_stats[entry]/float(self.runs)
+		for entry in self.extrema_stats:
+			print entry, self.extrema_stats[entry]
 		return str()
 
 	def game_new(self):
-		pass
-
-	def game_done(self):
-		pass
+		self.game_stats = Counter()
+		return None
 	
 	def load_depth(self):
 		if self.game_stats['war_depth'] > 0:
 			depth = self.game_stats['war_depth']
 			self.game_stats['depth'+str(depth)] += 1
 			self.game_stats['war_depth'] = 0
+		return None
+
+	def load_extrema(self):
+		# game level stats vs. simulation level stats
+		for entry in self.game_stats:
+			if self.game_stats[entry] > self.extrema_stats['max '+entry]:
+				self.extrema_stats['max '+entry] = self.game_stats[entry]
+
+		if self.extrema_stats['min battles'] == 0:
+			self.extrema_stats['min battles'] = self.game_stats['min battles']
+		if self.game_stats['min battles'] < self.extrema_stats['min battles']:
+			self.extrema_stats['min battles'] = self.game_stats['min battles']
+
+		return None
+
+	def load_simulation(self):
+		for entry in self.game_stats:
+			self.simulation_stats[entry] += self.game_stats[entry]
 		return None
 
 class Game(object):
@@ -176,7 +197,7 @@ class Deck(object):
 class Card(object):
 	"""Bare bones card class. no suits just face values:
 	A K Q J 10 9 8 7 6 5 4 3 2
-	for simplicity of card comparison, we'll use numeric card values """
+	for simplicity of card comparison, we'll use numeric card values"""
 
 	def __init__(self, value):
 		self.value = value
@@ -184,7 +205,7 @@ class Card(object):
 
 if __name__ == "__main__":
 	mark = time.time()
-	sim = Simulation(1000)
+	sim = Simulation(100)
 	sim.run()
 	print 'time_elapsed ', time.time()-mark, '\n'
 
