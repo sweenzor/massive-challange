@@ -5,24 +5,34 @@ import time
 from collections import Counter
 
 class Simulation(object):
-	"""Run repeated games"""
+	"""Run a game multiple times,
+	record statistics on each game and the entire simulation"""
 
 	def __init__(self, runs):
-		self.runs = runs
+		self.runs = runs # number of times to run simulation
+		self.stats = Statistics(self.runs)
 		return None
 
+	def __str__(self):
+		print 'simulation statistics:\n'
+		print self.stats
+		print 'number of runs ', self.runs
+		return str()
+
 	def run(self):
-		stats = Statistics(self.runs)
+		"""Initialize and run the game a specified number of times"""
 		for i in range(self.runs):
-			stats.game_new()
+			# create, shuffle and deal deck of cards
 			hand1, hand2 = Deck().deal()
 			player1 = Player(hand1)
 			player2 = Player(hand2)
-			war = Game(player1,player2, stats)
-			stats.load_extrema()
-			stats.load_simulation()
-		print stats
-		print 'number of runs ', self.runs
+
+			# play the game of war
+			war = Game(player1,player2, self.stats)
+
+			# transition stats between individual game and sim at large
+			self.stats.load_extrema()
+			self.stats.load_simulation()
 		return None
 
 
@@ -30,6 +40,8 @@ class Statistics(object):
 	"""Record statistics on whole simulation and particular games"""
 
 	def __init__(self, runs):
+		"""Create Counter objects to record game information"""
+
 		self.runs = runs
 		self.simulation_stats = Counter()
 		self.game_stats = Counter()
@@ -56,7 +68,8 @@ class Statistics(object):
 		return None
 
 	def load_extrema(self):
-		# game level stats vs. simulation level stats
+		""" game level stats vs. simulation level stats"""
+
 		for entry in self.game_stats:
 			if self.game_stats[entry] > self.extrema_stats['max '+entry]:
 				self.extrema_stats['max '+entry] = self.game_stats[entry]
@@ -81,13 +94,18 @@ class Game(object):
 		self.player2 = player2
 		self.stats = stats
 
+		# clear 'game level' stats
+		self.stats.game_new()
+
+		# continue to play battles until one player is out of cards
 		while (len(player1.hand) > 0) & (len(player2.hand) > 0):
 			self.battle()
 
 		return None
 
 	def versus(self, player1_card, player2_card, ante):
-		"""Card evaluator for either a war or battle"""
+		"""General card evaluator for either a war or battle"""
+
 		# compare values of drawn cards
 		if player1_card.value > player2_card.value:
 			self.player1.return_cards(ante)
@@ -97,7 +115,7 @@ class Game(object):
 			self.player2.return_cards(ante)
 			return
 
-		# in the event of a tie, play a war
+		# in the event of a tie, play a war to break the tie
 		if player1_card.value == player2_card.value:
 			self.war(ante)
 			return
@@ -105,12 +123,17 @@ class Game(object):
 		return None
 
 	def battle(self):
-		"""Battle"""
-		# each player draws a card, higher value card wins both cards
+		"""Battle between two players,
+		each player draws a card, higher value card wins both cards"""
 
+		# create pool to hold cards in play
 		ante = []
+		# add drawn cards into pool
 		ante += self.player1.draw(1)
 		ante += self.player2.draw(1)
+
+		# compare the cards drawn by each player
+		# in the event of a tie, a war will be played
 		self.versus(ante[0], ante[1], ante)
 
 		self.stats.game_stats['battles'] += 1 # statistics
@@ -118,7 +141,9 @@ class Game(object):
 		return None
 	
 	def war(self, ante):
-		"""Wars are used to break ties during battles, can be recursive"""
+		"""Wars are used to break ties during battles, can be recursive
+		during a war, each player draws three cards, choses one of those
+		three randomly, and plays those cards against each other"""
 		
 		# check that both players have sufficient cards for a war,
 		# if not, sacrifice remaining cards to the victor
@@ -131,12 +156,12 @@ class Game(object):
 			self.player2.hand = []
 			return
 
-		# begin war
-		# "each player antes three cards, then plays one of them"
+		# each player draws three cards, then plays one of them
 		draw1 = self.player1.draw(3)
 		draw2 = self.player2.draw(3)
-		ante += draw1 + draw2
+		ante += draw1 + draw2 # add drawn cards into pool
 
+		# randomly choose one of the three drawn cards to play
 		draw1 = random.choice(draw1)
 		draw2 = random.choice(draw2)
 		
@@ -163,11 +188,17 @@ class Player(object):
 		return len(self.hand)
 
 	def draw(self, number):
+		"""Draw a number of cards from player hand,
+		and pass them into play (remove them from hand)"""
 		draw = self.hand[0:number]
 		del self.hand[0:number]
 		return draw
 
 	def return_cards(self, ante):
+		"""Accept cards from play and add them to player's hand
+		cards are returned to the bottom of a players hand in a
+		random order to prevent infinity looping games"""
+
 		random.shuffle(ante)
 		self.hand.extend(ante)
 		return None
@@ -176,7 +207,8 @@ class Deck(object):
 	"""Create deck of cards"""
 
 	def __init__(self):
-		"""Creating numerical value card deck"""
+		"""Create numerical value card deck"""
+
 		self.deck = []
 		for card_value in range(2,15)*4:
 			self.deck.append(Card(card_value))
@@ -188,6 +220,7 @@ class Deck(object):
 
 	def deal(self):
 		"""Cut the deck, making two evenly sized hands"""
+
 		cut_size = len(self.deck)/2
 		hand1 = self.deck[:cut_size]
 		hand2 = self.deck[cut_size:]
@@ -197,7 +230,8 @@ class Deck(object):
 
 class Card(object):
 	"""Bare bones card class. no suits just face values:
-	A K Q J 10 9 8 7 6 5 4 3 2
+	A  K  Q  J  10 9 8 7 6 5 4 3 2
+	14 13 11 12 10
 	for simplicity of card comparison, we'll use numeric card values"""
 
 	def __init__(self, value):
@@ -210,6 +244,7 @@ if __name__ == "__main__":
 	runs = 100
 	sim = Simulation(runs)
 	sim.run()
+	print sim
 
 	run_time = time.time()-mark
 	print 'time elapsed ', run_time
