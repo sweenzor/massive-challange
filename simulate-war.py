@@ -43,6 +43,13 @@ class Statistics(object):
 
 	def game_done(self):
 		pass
+	
+	def load_depth(self):
+		if self.game_stats['war_depth'] > 0:
+			depth = self.game_stats['war_depth']
+			self.game_stats['depth'+str(depth)] += 1
+			self.game_stats['war_depth'] = 0
+		return None
 
 class Game(object):
 	"""Simulate the card game 'war'"""
@@ -85,6 +92,7 @@ class Game(object):
 		self.versus(ante[0], ante[1], ante)
 
 		self.stats.game_stats['battles'] += 1 # statistics
+		self.stats.load_depth() # statistics
 		return None
 	
 	def war(self, ante):
@@ -178,5 +186,5 @@ if __name__ == "__main__":
 	mark = time.time()
 	sim = Simulation(1000)
 	sim.run()
-	print time.time() - mark
+	print 'time_elapsed ', time.time()-mark, '\n'
 
