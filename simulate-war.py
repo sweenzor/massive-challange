@@ -42,7 +42,7 @@ class Statistics(object):
 	def __init__(self, runs):
 		"""Create Counter objects to record game information"""
 
-		self.runs = runs
+		self.runs = runs # iterations of the sim, for averages
 		self.simulation_stats = Counter()
 		self.game_stats = Counter()
 		self.extrema_stats = Counter()
@@ -57,10 +57,14 @@ class Statistics(object):
 		return str()
 
 	def game_new(self):
+		"""Clear game level stats"""
+
 		self.game_stats = Counter()
 		return None
 	
 	def load_depth(self):
+		"""Track the depth of recursion of 'wars'"""
+
 		if self.game_stats['war_depth'] > 0:
 			depth = self.game_stats['war_depth']
 			self.game_stats['depth'+str(depth)] += 1
@@ -68,12 +72,15 @@ class Statistics(object):
 		return None
 
 	def load_extrema(self):
-		""" game level stats vs. simulation level stats"""
+		"""Track minimum and maximum values of game statistics
+		across the entire simulation"""
 
+		# check if the current game contains any 'record breaking' stats
 		for entry in self.game_stats:
 			if self.game_stats[entry] > self.extrema_stats['max '+entry]:
 				self.extrema_stats['max '+entry] = self.game_stats[entry]
 
+		# special case to record minimum value records
 		if self.extrema_stats['min battles'] == 0:
 			self.extrema_stats['min battles'] = self.game_stats['battles']
 		if self.game_stats['battles'] < self.extrema_stats['min battles']:
@@ -82,6 +89,8 @@ class Statistics(object):
 		return None
 
 	def load_simulation(self):
+		"""Add statistics from a game into simulation level statistics"""
+
 		for entry in self.game_stats:
 			self.simulation_stats[entry] += self.game_stats[entry]
 		return None
