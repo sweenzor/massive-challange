@@ -13,15 +13,36 @@ class WarGame(object):
 		self.player2 = player2
 
 		while (len(player1.hand) > 0) & (len(player2.hand) > 0):
-
-			battle(player1,player2)
+			self.battle()
+			print player1
+			print player2, '\n'
 
 		return None
 
 	def battle(self):
-		pass
+		"""Battle"""
+		ante = []
+		# "each player draws a card, higher value card wins both"
+		ante += self.player1.draw(1)
+		ante += self.player2.draw(1)
+
+		# compare values of drawn cards
+		if ante[0].value > ante[1].value:
+			self.player1.return_cards(ante)
+			return
+
+		if ante[0].value < ante[1].value:
+			self.player2.return_cards(ante)
+			return
+		
+		if ante[0].value == ante[1].value:
+			self.player2.return_cards(ante)
+			return
+		
+		return None
 	
 	def war(self):
+		"""War"""
 		pass
 
 class Player(object):
@@ -29,15 +50,18 @@ class Player(object):
 	def __init__(self, hand):
 		self.hand = hand
 		return None
+	
+	def __str__(self):
+		return str([card.value for card in self.hand])
 
 	def draw(self, number):
 		draw = self.hand[0:number]
 		del self.hand[0:number]
 		return draw
 
-	def return_cards(self, pot):
-		random.shuffle(pot)
-		self.hand.extend(pot)
+	def return_cards(self, ante):
+		random.shuffle(ante)
+		self.hand.extend(ante)
 		return None
 
 class Deck(object):
@@ -72,8 +96,11 @@ class Card(object):
 		self.value = value
 		return None
 
+class Statistics(object):
+	pass
+
 if __name__ == "__main__":
 	hand1, hand2 = Deck().deal()
 	player1 = Player(hand1)
 	player2 = Player(hand2)
-	war = WarGame([player1,player2])
+	war = WarGame(player1,player2)
