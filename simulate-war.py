@@ -6,7 +6,20 @@ from collections import Counter
 
 class Simulation(object):
 	"""Run repeated games"""
-	pass
+
+	def __init__(self, runs):
+		self.runs = runs
+		return None
+
+	def run(self):
+		for i in range(self.runs):
+			hand1, hand2 = Deck().deal()
+			player1 = Player(hand1)
+			player2 = Player(hand2)
+			war = Game(player1,player2)
+		
+		return None
+
 
 class Statistics(object):
 	"""Record statistics on whole simulation and particular games"""
@@ -21,8 +34,10 @@ class Game(object):
 
 		while (len(player1.hand) > 0) & (len(player2.hand) > 0):
 			self.battle()
-			print player1
-			print player2, '\n'
+			print player1, len(player1)
+			print player2, len(player2), '\n'
+			if len(player1)+len(player2) != 52:
+				print 'error', len(player1), len(player2)
 
 		return None
 
@@ -63,7 +78,7 @@ class Game(object):
 			self.player2.hand.extend(ante+self.player1.hand)
 			return
 		if len(self.player2.hand) < 3:
-			self.player2.hand.extend(ante+self.player1.hand)
+			self.player1.hand.extend(ante+self.player2.hand)
 			return
 
 		# begin war
@@ -83,7 +98,7 @@ class Game(object):
 
 class Player(object):
 	"""Player has hand from which they can draw cards,
-	and return capture cards too."""
+	and return captured cards."""
 
 	def __init__(self, hand):
 		self.hand = hand
@@ -91,6 +106,9 @@ class Player(object):
 	
 	def __str__(self):
 		return str([card.value for card in self.hand])
+
+	def __len__(self):
+		return len(self.hand)
 
 	def draw(self, number):
 		draw = self.hand[0:number]
@@ -135,7 +153,8 @@ class Card(object):
 		return None
 
 if __name__ == "__main__":
-	hand1, hand2 = Deck().deal()
-	player1 = Player(hand1)
-	player2 = Player(hand2)
-	war = Game(player1,player2)
+	mark = time.time()
+	sim = Simulation(1)
+	sim.run()
+	print time.time() - mark
+
