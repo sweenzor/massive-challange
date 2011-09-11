@@ -46,15 +46,26 @@ class Statistics(object):
 		self.simulation_stats = Counter()
 		self.game_stats = Counter()
 		self.extrema_stats = Counter()
+		self.victory_stats = Counter()
 		return None
 	
 	def __str__(self):
+		"""Return table of relavent statistics"""
+
 		self.simulation_stats += Counter()
+		table = ''
+
 		for entry in self.simulation_stats:
-			print 'avg', entry, self.simulation_stats[entry]/float(self.runs)
+			table += 'avg ' + entry + ' ' + \
+				str(self.simulation_stats[entry]/float(self.runs)) + '\n'
+
 		for entry in self.extrema_stats:
-			print entry, self.extrema_stats[entry]
-		return str()
+			table += entry + ' ' + str(self.extrema_stats[entry]) + '\n'
+
+		for entry in self.victory_stats:
+			table += entry + ' wins ' + str(self.victory_stats[entry]) + '\n'
+
+		return table
 
 	def game_new(self):
 		"""Clear game level stats"""
@@ -109,6 +120,9 @@ class Game(object):
 		# continue to play battles until one player is out of cards
 		while (len(player1.hand) > 0) & (len(player2.hand) > 0):
 			self.battle()
+		
+		if len(player1.hand) != 0: self.stats.victory_stats['player1'] += 1
+		if len(player2.hand) != 0: self.stats.victory_stats['player2'] += 1
 
 		return None
 
@@ -135,11 +149,8 @@ class Game(object):
 		"""Battle between two players,
 		each player draws a card, higher value card wins both cards"""
 
-		# create pool to hold cards in play
-		ante = []
-		# add drawn cards into pool
-		ante += self.player1.draw(1)
-		ante += self.player2.draw(1)
+		# create pool to hold cards drawn into play
+		ante = self.player1.draw(1) + self.player2.draw(1)
 
 		# compare the cards drawn by each player
 		# in the event of a tie, a war will be played
@@ -250,7 +261,7 @@ class Card(object):
 if __name__ == "__main__":
 	mark = time.time()
 	
-	runs = 100
+	runs = 1000
 	sim = Simulation(runs)
 	sim.run()
 	print sim
