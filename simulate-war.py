@@ -13,16 +13,16 @@ class WarGame(object):
 		self.player2 = player2
 
 		while (len(player1.hand) > 0) & (len(player2.hand) > 0):
-			self.battle()
+			self.battle(None)
 			print player1
 			print player2, '\n'
 
 		return None
 
-	def battle(self):
+	def battle(self, ante):
 		"""Battle"""
-		ante = []
-		# "each player draws a card, higher value card wins both"
+		# each player draws a card, higher value card wins both cards
+		if not ante: ante = []
 		ante += self.player1.draw(1)
 		ante += self.player2.draw(1)
 
@@ -34,19 +34,37 @@ class WarGame(object):
 		if ante[0].value < ante[1].value:
 			self.player2.return_cards(ante)
 			return
-		
+
+		# in the event of a tie, play a war
 		if ante[0].value == ante[1].value:
-			self.player2.return_cards(ante)
+			self.war(ante)
 			return
 		
 		return None
 	
-	def war(self):
-		"""War"""
-		pass
+	def war(self, ante):
+		"""Wars are used to break ties during battles, can be recursive"""
+		
+		# check that both players have sufficient cards for a war,
+		# if not, sacrifice remaining cards to the victor
+		if len(self.player1.hand) < 3:
+			self.player2.hand.extend(ante+self.player1.hand)
+			return
+
+		if len(self.player2.hand) < 3:
+			self.player2.hand.extend(ante+self.player1.hand)
+			return
+
+		# begin war
+		# "each player antes three cards, then plays one of them"
+		ante += self.player1.draw(3)
+		ante += self.player2.draw(3)
+
 
 class Player(object):
-
+	"""Player has hand from which they can draw cards,
+	and return capture cards too."""
+	
 	def __init__(self, hand):
 		self.hand = hand
 		return None
