@@ -23,7 +23,18 @@ class Simulation(object):
 
 class Statistics(object):
 	"""Record statistics on whole simulation and particular games"""
-	pass
+
+	def __init__(self):
+		self.simulation_stats = Counter()
+		self.game_stats = Counter()
+		self.extrema_stats = Counter()
+		return None
+	
+	def check_extrema(self):
+		pass
+	
+	def game_complete(self):
+		pass
 
 class Game(object):
 	"""Simulate the card game 'war'"""
@@ -34,10 +45,6 @@ class Game(object):
 
 		while (len(player1.hand) > 0) & (len(player2.hand) > 0):
 			self.battle()
-			print player1, len(player1)
-			print player2, len(player2), '\n'
-			if len(player1)+len(player2) != 52:
-				print 'error', len(player1), len(player2)
 
 		return None
 
@@ -76,9 +83,11 @@ class Game(object):
 		# if not, sacrifice remaining cards to the victor
 		if len(self.player1.hand) < 3:
 			self.player2.hand.extend(ante+self.player1.hand)
+			self.player1.hand = []
 			return
 		if len(self.player2.hand) < 3:
 			self.player1.hand.extend(ante+self.player2.hand)
+			self.player2.hand = []
 			return
 
 		# begin war
@@ -154,7 +163,7 @@ class Card(object):
 
 if __name__ == "__main__":
 	mark = time.time()
-	sim = Simulation(1)
+	sim = Simulation(10000)
 	sim.run()
 	print time.time() - mark
 
