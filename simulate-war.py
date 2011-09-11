@@ -19,27 +19,31 @@ class WarGame(object):
 
 		return None
 
+	def versus(self, player1_card, player2_card, ante):
+		# compare values of drawn cards
+		if player1_card.value > player2_card.value:
+			self.player1.return_cards(ante)
+			return
+
+		if player1_card.value < player2_card.value:
+			self.player2.return_cards(ante)
+			return
+
+		# in the event of a tie, play a war
+		if player1_card.value == player2_card.value:
+			self.war(ante)
+			return
+
+		return None
+
 	def battle(self):
 		"""Battle"""
 		# each player draws a card, higher value card wins both cards
 		ante = []
 		ante += self.player1.draw(1)
 		ante += self.player2.draw(1)
+		self.versus(ante[0], ante[1], ante)
 
-		# compare values of drawn cards
-		if ante[0].value > ante[1].value:
-			self.player1.return_cards(ante)
-			return
-
-		if ante[0].value < ante[1].value:
-			self.player2.return_cards(ante)
-			return
-
-		# in the event of a tie, play a war
-		if ante[0].value == ante[1].value:
-			self.war(ante)
-			return
-		
 		return None
 	
 	def war(self, ante):
@@ -60,22 +64,12 @@ class WarGame(object):
 		draw1 = self.player1.draw(3)
 		draw2 = self.player2.draw(3)
 		ante += draw1 + draw2
+
 		draw1 = random.choice(draw1)
 		draw2 = random.choice(draw2)
-
-		# compare values of drawn cards
-		if draw1.value > draw2.value:
-			self.player1.return_cards(ante)
-			return
-
-		if draw1.value < draw2.value:
-			self.player2.return_cards(ante)
-			return
-
-		# in the event of a tie, play a war
-		if draw1.value == draw2.value:
-			self.war(ante)
-			return
+		
+		# battle!
+		self.versus(draw1, draw2, ante)
 		
 		return None
 
