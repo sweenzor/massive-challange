@@ -13,16 +13,16 @@ class WarGame(object):
 		self.player2 = player2
 
 		while (len(player1.hand) > 0) & (len(player2.hand) > 0):
-			self.battle(None)
+			self.battle()
 			print player1
 			print player2, '\n'
 
 		return None
 
-	def battle(self, ante):
+	def battle(self):
 		"""Battle"""
 		# each player draws a card, higher value card wins both cards
-		if not ante: ante = []
+		ante = []
 		ante += self.player1.draw(1)
 		ante += self.player2.draw(1)
 
@@ -57,14 +57,33 @@ class WarGame(object):
 
 		# begin war
 		# "each player antes three cards, then plays one of them"
-		ante += self.player1.draw(3)
-		ante += self.player2.draw(3)
+		draw1 = self.player1.draw(3)
+		draw2 = self.player2.draw(3)
+		ante += draw1 + draw2
+		draw1 = random.choice(draw1)
+		draw2 = random.choice(draw2)
+
+		# compare values of drawn cards
+		if draw1.value > draw2.value:
+			self.player1.return_cards(ante)
+			return
+
+		if draw1.value < draw2.value:
+			self.player2.return_cards(ante)
+			return
+
+		# in the event of a tie, play a war
+		if draw1.value == draw2.value:
+			self.war(ante)
+			return
+		
+		return None
 
 
 class Player(object):
 	"""Player has hand from which they can draw cards,
 	and return capture cards too."""
-	
+
 	def __init__(self, hand):
 		self.hand = hand
 		return None
