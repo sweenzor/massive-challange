@@ -20,7 +20,7 @@ class Simulation(object):
 			player2 = Player(hand2)
 			war = Game(player1,player2, stats)
 			stats.game_done()
-			print stats
+		print stats
 		return None
 
 
@@ -36,7 +36,7 @@ class Statistics(object):
 	def __str__(self):
 		for entry in self.game_stats:
 			print entry, self.game_stats[entry]
-		return str('\n')
+		return str()
 
 	def game_new(self):
 		pass
@@ -113,6 +113,7 @@ class Game(object):
 		# battle!
 		self.versus(draw1, draw2, ante)
 
+		self.stats.game_stats['war_depth'] += 1 # statistics
 		self.stats.game_stats['wars'] += 1 # statistics
 		return None
 
