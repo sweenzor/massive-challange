@@ -1,5 +1,6 @@
 #! /usr/bin/python
 
+import sys
 import random
 import time
 from collections import Counter
@@ -14,9 +15,9 @@ class Simulation(object):
 		return None
 
 	def __str__(self):
-		print 'simulation statistics:\n'
+		print '\nsimulation statistics:'
+		print 'number of runs ', self.runs, '\n'
 		print self.stats
-		print 'number of runs ', self.runs
 		return str()
 
 	def run(self):
@@ -34,6 +35,10 @@ class Simulation(object):
 			self.stats.load_extrema()
 			self.stats.load_simulation()
 		return None
+	
+	def progress_bar(self):
+		self.runs
+		print 
 
 
 class Statistics(object):
@@ -55,15 +60,15 @@ class Statistics(object):
 		self.simulation_stats += Counter()
 		table = ''
 
+		for entry in self.victory_stats:
+			table += entry + ' wins ' + str(self.victory_stats[entry]) + '\n'
+
 		for entry in self.simulation_stats:
 			table += 'avg ' + entry + ' ' + \
 				str(self.simulation_stats[entry]/float(self.runs)) + '\n'
 
 		for entry in self.extrema_stats:
 			table += entry + ' ' + str(self.extrema_stats[entry]) + '\n'
-
-		for entry in self.victory_stats:
-			table += entry + ' wins ' + str(self.victory_stats[entry]) + '\n'
 
 		return table
 
@@ -261,11 +266,15 @@ class Card(object):
 if __name__ == "__main__":
 	mark = time.time()
 	
-	runs = 1000
+	if len(sys.argv) > 1:
+		runs = int(sys.argv[1])
+	else:
+		runs = 100
+
 	sim = Simulation(runs)
 	sim.run()
 	print sim
 
 	run_time = time.time()-mark
 	print 'time elapsed ', run_time
-	print 'average time per run ', run_time/float(runs)
+	print 'average time per run ', run_time/float(runs), '\n'
