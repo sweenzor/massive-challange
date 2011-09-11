@@ -12,12 +12,15 @@ class Simulation(object):
 		return None
 
 	def run(self):
+		stats = Statistics()
 		for i in range(self.runs):
+			stats.game_new()
 			hand1, hand2 = Deck().deal()
 			player1 = Player(hand1)
 			player2 = Player(hand2)
-			war = Game(player1,player2)
-		
+			war = Game(player1,player2, stats)
+			stats.game_done()
+			print stats
 		return None
 
 
@@ -30,18 +33,24 @@ class Statistics(object):
 		self.extrema_stats = Counter()
 		return None
 	
-	def check_extrema(self):
+	def __str__(self):
+		for entry in self.game_stats:
+			print entry, self.game_stats[entry]
+		return str('\n')
+
+	def game_new(self):
 		pass
-	
-	def game_complete(self):
+
+	def game_done(self):
 		pass
 
 class Game(object):
 	"""Simulate the card game 'war'"""
 
-	def __init__(self, player1, player2):
+	def __init__(self, player1, player2, stats):
 		self.player1 = player1
 		self.player2 = player2
+		self.stats = stats
 
 		while (len(player1.hand) > 0) & (len(player2.hand) > 0):
 			self.battle()
@@ -69,11 +78,13 @@ class Game(object):
 	def battle(self):
 		"""Battle"""
 		# each player draws a card, higher value card wins both cards
+
 		ante = []
 		ante += self.player1.draw(1)
 		ante += self.player2.draw(1)
 		self.versus(ante[0], ante[1], ante)
 
+		self.stats.game_stats['battles'] += 1 # statistics
 		return None
 	
 	def war(self, ante):
@@ -101,7 +112,8 @@ class Game(object):
 		
 		# battle!
 		self.versus(draw1, draw2, ante)
-		
+
+		self.stats.game_stats['wars'] += 1 # statistics
 		return None
 
 
@@ -163,7 +175,7 @@ class Card(object):
 
 if __name__ == "__main__":
 	mark = time.time()
-	sim = Simulation(10000)
+	sim = Simulation(1000)
 	sim.run()
 	print time.time() - mark
 
