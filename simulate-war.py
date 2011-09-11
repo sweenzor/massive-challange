@@ -22,6 +22,7 @@ class Simulation(object):
 			stats.load_extrema()
 			stats.load_simulation()
 		print stats
+		print 'number of runs ', self.runs
 		return None
 
 
@@ -61,9 +62,9 @@ class Statistics(object):
 				self.extrema_stats['max '+entry] = self.game_stats[entry]
 
 		if self.extrema_stats['min battles'] == 0:
-			self.extrema_stats['min battles'] = self.game_stats['min battles']
-		if self.game_stats['min battles'] < self.extrema_stats['min battles']:
-			self.extrema_stats['min battles'] = self.game_stats['min battles']
+			self.extrema_stats['min battles'] = self.game_stats['battles']
+		if self.game_stats['battles'] < self.extrema_stats['min battles']:
+			self.extrema_stats['min battles'] = self.game_stats['battles']
 
 		return None
 
@@ -205,7 +206,11 @@ class Card(object):
 
 if __name__ == "__main__":
 	mark = time.time()
-	sim = Simulation(100)
+	
+	runs = 100
+	sim = Simulation(runs)
 	sim.run()
-	print 'time_elapsed ', time.time()-mark, '\n'
 
+	run_time = time.time()-mark
+	print 'time elapsed ', run_time
+	print 'average time per run ', run_time/float(runs)
