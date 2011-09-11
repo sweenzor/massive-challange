@@ -4,8 +4,15 @@ import random
 import time
 from collections import Counter
 
+class Simulation(object):
+	"""Run repeated games"""
+	pass
 
-class WarGame(object):
+class Statistics(object):
+	"""Record statistics on whole simulation and particular games"""
+	pass
+
+class Game(object):
 	"""Simulate the card game 'war'"""
 
 	def __init__(self, player1, player2):
@@ -20,6 +27,7 @@ class WarGame(object):
 		return None
 
 	def versus(self, player1_card, player2_card, ante):
+		"""Card evaluator for either a war or battle"""
 		# compare values of drawn cards
 		if player1_card.value > player2_card.value:
 			self.player1.return_cards(ante)
@@ -54,7 +62,6 @@ class WarGame(object):
 		if len(self.player1.hand) < 3:
 			self.player2.hand.extend(ante+self.player1.hand)
 			return
-
 		if len(self.player2.hand) < 3:
 			self.player2.hand.extend(ante+self.player1.hand)
 			return
@@ -127,11 +134,8 @@ class Card(object):
 		self.value = value
 		return None
 
-class Statistics(object):
-	pass
-
 if __name__ == "__main__":
 	hand1, hand2 = Deck().deal()
 	player1 = Player(hand1)
 	player2 = Player(hand2)
-	war = WarGame(player1,player2)
+	war = Game(player1,player2)
