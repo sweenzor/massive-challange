@@ -28,8 +28,9 @@ class Simulation(object):
 			player1 = Player(hand1)
 			player2 = Player(hand2)
 
-			# play the game of war
+			# play the game of war, output progress bar
 			war = Game(player1,player2, self.stats)
+			self.progress_bar()
 
 			# transition stats between individual game and sim at large
 			self.stats.load_extrema()
@@ -37,9 +38,15 @@ class Simulation(object):
 		return None
 	
 	def progress_bar(self):
-		self.runs
-		print 
-
+		"""Simple progress bar for simulation"""
+		current_run = 0
+		for entry in self.stats.victory_stats:
+			current_run += self.stats.victory_stats[entry]
+		percent = (current_run/float(self.runs))*100.0
+		if percent == 1 or percent % 5 == 0:
+			sys.stdout.write('\r'+str(int(percent))+'% complete')
+			sys.stdout.flush()
+		return None
 
 class Statistics(object):
 	"""Record statistics on whole simulation and particular games"""
@@ -196,7 +203,6 @@ class Game(object):
 		self.stats.game_stats['war_depth'] += 1 # statistics
 		self.stats.game_stats['wars'] += 1 # statistics
 		return None
-
 
 class Player(object):
 	"""Player has hand from which they can draw cards,
